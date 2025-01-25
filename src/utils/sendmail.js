@@ -13,15 +13,17 @@ const transport = createTransport({
   }
 })
 
-const sendMailUtil = async(emails , trackingId)=>{
-  const trackingURL = `${process.env.BASE_URL}/api/v1/mail/track?id=${trackingId}`
+const sendMailUtil = async(emails , trackingId , subject , body)=>{
+  const trackingURL = `${process.env.BASE_URL}/api/v1/mail/track?id=${trackingId}&t=${Date.now()}`
   const mailOptions={
     from:process.env.EMAIL_USER,
     to:emails,
-    subject:"Tracking dead pixel",
+    subject:subject,
     html:`
-    <h1>Tracking id: ${trackingId}</h1>
-    <img src="${trackingURL} alt="dead-pixel" style="display:none"/>
+    <div> 
+     <p>${body}</p>
+     <img src="${trackingURL} alt="dead-pixel" style="display:none"/>
+    </div>
     `
   }
 

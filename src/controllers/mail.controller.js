@@ -8,13 +8,13 @@ import { fileURLToPath } from 'url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const sendMail = async (req , res)=>{
-  const {emails , name } = req.body
+  const {emails , subject , body } = req.body
 
   const trackingId = uuid()
 
   try {
     await Mail.create({trackingId})
-    await sendMailUtil(emails ,trackingId )
+    await sendMailUtil(emails ,trackingId , subject , body )
     return res.status(200).json({message:"Mail sent successfully", trackingId:trackingId})
   } catch (error) {
     console.log("Something went wrong while sending mail " , error)
@@ -25,12 +25,12 @@ const sendMail = async (req , res)=>{
 
 const trackMail = async (req , res)=>{
   const {id} = req.query
-  const userIp = req.headers['true-client-ip'] || req.headers['cf-connecting-ip'];
+  const userIp = req.headers['true-client-ip'] || req.headers['cf-connecting-ip'] || req.ip;
 
   try {
     const track = await Mail.findOne({trackingId:id})
     if(!track){
-      res.send(404).json({message:"No tracking found"})
+      return res.status(404).json({message:"No tracking found"})
     }
     if(!track.userIPs.includes(userIp)){
       track.userIPs.push(userIp)
@@ -39,7 +39,7 @@ const trackMail = async (req , res)=>{
     }
     const image = path.join(__dirname,"..", 'images', 'timeslotLogo5.png');
 
-    return res.sendFile(image, {
+    return res.sendFile(image , {
       headers: {
         "Content-Type": "image/png",
       },

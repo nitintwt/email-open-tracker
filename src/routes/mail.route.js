@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { mailStatus, sendMail, trackMail } from "../controllers/mailc.ontroller.js";
+import { mailStatus, sendMail, trackMail } from "../controllers/mail.controller.js";
 
 
 const mailRouter = Router()
